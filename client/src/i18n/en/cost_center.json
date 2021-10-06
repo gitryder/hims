@@ -17,6 +17,7 @@
     "EDIT_ALLOCATION_BASIS": "Edit allocation basis",
     "EDIT_ALLOCATION_KEYS" : "Edit Allocation Keys",
     "EDIT_COST_CENTER" : "Update the Cost Center Information",
+    "EDIT_STEP_ORDER" : "Edit order of cost allocation steps",
     "PRINCIPAL": "Principal Cost Center",
     "NO_COST_CENTER_DEFINED": "** Cost Center Not Defined **",
     "SELECT_ALLOCATION_BASIS": "Select allocation basis",
