@@ -12,7 +12,7 @@ const FilterParser = require('../../lib/filter');
 async function lookupCostCenter(id) {
   const sqlCostCenter = `
     SELECT fc.id, fc.label, fc.is_principal, fc.project_id,
-      fc.allocation_method, fc.allocation_basis_id,
+      fc.allocation_method, fc.allocation_basis_id, fc.step_order,
       cab.name AS allocation_basis_name, cab.units as allocation_basis_units,
       cab.is_predefined AS allocation_basis_is_predefined,
       cabval.quantity AS allocation_basis_quantity
@@ -68,7 +68,7 @@ async function lookupCostCenter(id) {
 function list(req, res, next) {
   const filters = new FilterParser(req.query, { tableAlias : 'f' });
   const sql = `
-    SELECT f.id, f.label, f.is_principal, f.project_id,
+    SELECT f.id, f.label, f.is_principal, f.project_id, f.step_order,
       f.allocation_method, f.allocation_basis_id,
       GROUP_CONCAT(' ', LOWER(ar.description)) AS abbrs,
       GROUP_CONCAT(' ', s.name) serviceNames, p.name AS projectName,
