@@ -341,6 +341,19 @@ function assignCostCenterParams(accountsCostCenter, rubrics, key) {
   return rubrics;
 }
 
+
+// PUT /cost_center/step_order/:id
+function setAllocationStepOrder(req, res, next) {
+  const { params } = req.body;
+  const updateSql = 'UPDATE `cost_center` SET `step_order` = ? WHERE `id` = ?';
+  db.exec(updateSql, [params.step_order, params.id])
+    .then(() => {
+      res.status(200);
+    })
+    .catch(next)
+    .done();
+}
+
 // get list of costCenter
 exports.list = list;
 // get details of a costCenter
@@ -355,3 +368,6 @@ exports.delete = del;
 exports.getAllCostCenterAccounts = getAllCostCenterAccounts;
 // Assign Cost Center Params
 exports.assignCostCenterParams = assignCostCenterParams;
+
+exports.setAllocationStepOrder = setAllocationStepOrder;
+
