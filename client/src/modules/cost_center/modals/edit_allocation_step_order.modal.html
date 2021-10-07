@@ -1,6 +1,7 @@
 <form
   name="ModalForm"
   class="NoSubmitButton"
+  bh-submit="ModalCtrl.submit()"
   data-modal="allocation-bases"
   novalidate>
 
@@ -40,6 +41,7 @@
     </button>
 
     <bh-loading-button loading-state="ModalForm.$loading">
+      <span translate>FORM.BUTTONS.SUBMIT</span>
     </bh-loading-button>
   </div>
 

@@ -14,6 +14,7 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
   vm.loadCostCenters = loadCostCenters;
   vm.moveStepDown = moveStepDown;
   vm.moveStepUp = moveStepUp;
+  vm.submit = submit;
 
   // global variables
   vm.gridApi = {};
@@ -21,14 +22,14 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
 
   // options for the UI grid
   vm.gridOptions = {
-    appScopeProvider: vm,
-    enableColumnMenus: false,
-    fastWatch: true,
-    flatEntityAccess: true,
-    enableRowReordering: true,
-    enableSorting: false,
-    onRegisterApi: onRegisterApiFn,
-    columnDefs: [
+    appScopeProvider : vm,
+    enableColumnMenus : false,
+    // fastWatch : true,
+    flatEntityAccess : true,
+    enableRowReordering : true,
+    enableSorting : false,
+    onRegisterApi : onRegisterApiFn,
+    columnDefs : [
       {
         field : 'label',
         displayName : 'FORM.LABELS.DESIGNATION',
@@ -40,16 +41,16 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
         displayName : 'COST_CENTER.STEP_ORDER',
         headerCellFilter : 'translate',
         headerCellClass : 'allocationBasisColHeader',
+        defaultSort : { direction : uiGridConstants.ASC, priority : 1 },
         type : 'number',
-        sort : { direction : uiGridConstants.ASC, priority : 0 },
         visible : true,
       },
       {
         field : 'reorder',
         displayName : '',
-        cellTemplate: '/modules/cost_center/templates/reorder_allocation_steps.tmpl.html',
-        enableSorting: false,
-        enableFiltering: false,
+        cellTemplate : '/modules/cost_center/templates/reorder_allocation_steps.tmpl.html',
+        enableSorting : false,
+        enableFiltering : false,
       },
     ],
   };
@@ -60,14 +61,12 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
       .then((data) => {
         const auxData = data.filter(item => !item.is_principal);
         auxData.sort((a, b) => Number(a.step_order) - Number(b.step_order));
-        auxData.forEach((item, i) => {
-          item.row_num = i;
-          if (i === 0) {
-            item.first_row = true;
-          } else if (i === auxData.length - 1) {
-            item.last_row = true;
-          }
+
+        // rewrite the step order
+        auxData.forEach((value, idx) => {
+          value.step_order = idx + 1;
         });
+
         vm.data = auxData;
         vm.gridOptions.data = vm.data;
       })
@@ -81,25 +80,27 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
     vm.gridApi = gridApi;
   }
 
-  function moveStepDown(id, row) {
-    const currRow = vm.data[row];
-    const nextRow = vm.data[row + 1];
-    // Swap
-    CostCenters.setAllocationStepOrder({ id : currRow.id, step_order : nextRow.step_order });
-    CostCenters.setAllocationStepOrder({ id : nextRow.id, step_order : currRow.step_order });
-    vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
-    loadCostCenters();
+  function moveStepDown(row) {
+    const stepOrder = row.step_order;
+    const upper = vm.data.find(r => r.step_order === stepOrder + 1);
+
+    row.step_order++;
+    upper.step_order--;
+    vm.gridApi.core.refreshRows();
   }
 
-  function moveStepUp(id, row) {
-    const currRow = vm.data[row];
-    const prevRow = vm.data[row - 1];
-    // Swap
-    CostCenters.setAllocationStepOrder({ id : currRow.id, step_order : prevRow.step_order });
-    CostCenters.setAllocationStepOrder({ id : prevRow.id, step_order : currRow.step_order });
-    vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.ALL);
-    loadCostCenters();
+  function moveStepUp(row) {
+    const stepOrder = row.step_order;
+    const lower = vm.data.find(r => r.step_order === stepOrder - 1);
+
+    row.step_order--;
+    lower.step_order++;
+    vm.gridApi.core.refreshRows();
   }
 
   loadCostCenters();
+
+  function submit() {
+    console.log('submitted');
+  }
 }
